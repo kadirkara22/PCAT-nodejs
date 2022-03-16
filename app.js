@@ -5,12 +5,12 @@ const fileUpload = require('express-fileupload');
 const mongoose = require('mongoose');
 const { getAllPhotos, getPhoto, createPhoto, updatePhoto, deletePhoto } = require('./controllers/photoControllers');
 const { getAboutPage, getAddPage, getEditPage } = require('./controllers/pageControllers');
-
+require('dotenv').config()
 const app = express();
 
 //mongoose.connect('mongodb://localhost/pcat-test-db')
 
-mongoose.connect('mongodb+srv://kadir:123456789.@cluster0.qpmrg.mongodb.net/pcat-db?retryWrites=true&w=majority')
+mongoose.connect(`mongodb+srv://kadir:${process.env.PASSWORD}@cluster0.qpmrg.mongodb.net/pcat-db?retryWrites=true&w=majority`)
     .then(() => {
         console.log('DB CONNECTED!')
     }).catch((err) => {
