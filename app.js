@@ -1,11 +1,10 @@
 const express = require('express');
 const ejs = require('ejs');
-const path = require('path')
-const fs = require('fs')
+const methodOverride = require('method-override')
 const fileUpload = require('express-fileupload');
-const Photo = require('./modals/Photo');
 const mongoose = require('mongoose');
-const { fstat } = require('fs');
+const { getAllPhotos, getPhoto, createPhoto, updatePhoto, deletePhoto } = require('./controllers/photoControllers');
+const { getAboutPage, getAddPage, getEditPage } = require('./controllers/pageControllers');
 
 const app = express();
 
@@ -21,57 +20,29 @@ mongoose.connect('mongodb://localhost/pcat-test-db')
 app.set("view engine", "ejs");
 
 app.use(express.static('public'))
-app.use(fileUpload());
-
-
-app.get('/', async (req, res) => {
-    const photos = await Photo.find({}).sort('-dateCreated')
-    res.render('index', {
-        photos
-    })
-})
-
-app.get('/photos/:id', async (req, res) => {
-    const photo = await Photo.findById(req.params.id)
-    res.render('photo', {
-        photo
-    })
-})
-
-app.get('/about', (req, res) => {
-    res.render('about')
-})
-
-app.get('/add', (req, res) => {
-    res.render('add')
-})
-
-
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
+app.use(fileUpload());
+app.use(methodOverride('_method', {
+    methods: ['POST', 'GET']
+}))
 
-app.post('/photos', async (req, res) => {
-    //console.log(req.files.image)
-    //await Photo.create(req.body)
-    //res.redirect('/')
 
-    const uploadDir = 'public/uploads'
-    if (!fs.existsSync(uploadDir)) {
-        fs.mkdirSync(uploadDir)
-    }
+app.get('/', getAllPhotos)
+app.get('/photos/:id', getPhoto)
+app.post('/photos', createPhoto)
+app.put('/photos/:id', updatePhoto)
+app.delete('/photos/:id', deletePhoto)
 
-    let uploadeImage = req.files.image
-    let uploadPath = __dirname + '/public/uploads/' + uploadeImage.name
+app.get('/about', getAboutPage)
 
-    uploadeImage.mv(uploadPath, async () => {
-        await Photo.create({
-            ...req.body,
-            image: '/uploads/' + uploadeImage.name
-        })
-        res.redirect('/')
-    })
+app.get('/add', getAddPage)
 
-})
+app.get('/photos/edit/:id', getEditPage)
+
+
+
+
 const port = 3000;
 
 app.listen(port, () => {
