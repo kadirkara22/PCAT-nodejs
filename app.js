@@ -8,14 +8,14 @@ const { getAboutPage, getAddPage, getEditPage } = require('./controllers/pageCon
 
 const app = express();
 
-mongoose.connect('mongodb://localhost/pcat-test-db')
+//mongoose.connect('mongodb://localhost/pcat-test-db')
 
-/* mongoose.connect('mongodb+srv://kadir:123456789.@cluster0.qpmrg.mongodb.net/pcat-db?retryWrites=true&w=majority')
+mongoose.connect('mongodb+srv://kadir:123456789.@cluster0.qpmrg.mongodb.net/pcat-db?retryWrites=true&w=majority')
     .then(() => {
         console.log('DB CONNECTED!')
     }).catch((err) => {
         console.log(err)
-    }) */
+    })
 
 app.set("view engine", "ejs");
 
@@ -43,7 +43,7 @@ app.get('/photos/edit/:id', getEditPage)
 
 
 
-const port = 3000;
+const port = process.env.PORT || 5000
 
 app.listen(port, () => {
     console.log(`Sunucu ${port} portunda başlatıldı...`)
